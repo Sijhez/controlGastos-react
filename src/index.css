@@ -380,9 +380,9 @@ body .modal {
     text-align: left;
 }
 
-.CircularProgressbar .CircularProgressbar-text {
+/* .CircularProgressbar .CircularProgressbar-text {
     font-size: 1rem !important;
-}
+} */
 
 /*** SWIPE LIST OVERRIDES **/
 .swipe-action__leading {

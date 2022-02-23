@@ -29,7 +29,7 @@ const diccionarioIconos = {
 }
 
 
-const Gasto = ({gasto, setGastoEditar}) => {
+const Gasto = ({gasto, setGastoEditar,eliminarGasto}) => {
     //usando destructuracion de objetos, extraemos la propiedad del objeto recibido
     const {categoria, nombre, cantidad, id, fecha }=gasto
     
@@ -48,7 +48,8 @@ const Gasto = ({gasto, setGastoEditar}) => {
     const trailingActions=()=>(
         <TrailingActions>
             <SwipeAction
-              onClick={()=>console.log('Eliminar')}
+              onClick={()=>eliminarGasto(id)}
+              destructive={true}
             >
                 Eliminar
             </SwipeAction>

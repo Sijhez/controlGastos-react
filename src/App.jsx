@@ -40,17 +40,29 @@ const handleNuevoGasto = ()=>{
 
 //generar un id para cada elmeneto del array:
 
+const eliminarGasto = id =>{
+ const gastosActualizados = gastos.filter(gasto=>gasto.id !== id)
+ setGastos(gastosActualizados)
+  // console.log(gastosActualizados) 
+}
+
 
 const guardarGasto = (gasto)=>{
-  //creamos el state en gastos, reemplazamos su valor con lo que recibimos de gasto ingresado en Modal.jsx
+  if(gasto.id){
+    //actualizar gasto, si existe ID generado
+    const gastosActualizados = gastos.map(gastoState => gastoState.id === gasto.id ? gasto : gastoState)
+    setGastos(gastosActualizados) // realizamos seteo con los gastos que se van a actualizar
+    setGastoEditar({})
+  }else{
+    //Nuevo gasto, si no existe el ID
+     //creamos el state en gastos, reemplazamos su valor con lo que recibimos de gasto ingresado en Modal.jsx
  gasto.id=generarId() //agregamos id para poder editar posteriormente
  gasto.fecha=Date.now();//agregamos fecha de registro de un gasto nuevo
  setGastos([...gastos, gasto])
+  }
  // console.log(gasto) //recibe el objeto que se genera en el Modal.jsx
-
  setAnimarModal(false)
-
- setTimeout(()=>{
+setTimeout(()=>{
      setModal(false)
  }, 300)
 }
@@ -70,6 +82,7 @@ return (
           <ListadoGastos
           gastos={gastos}
           setGastoEditar={setGastoEditar}
+          eliminarGasto = {eliminarGasto}
           />
         </main>
         <div className='nuevo-gasto'>
@@ -88,6 +101,7 @@ return (
            setAnimarModal={setAnimarModal}
            guardarGasto={guardarGasto}
            gastoEditar={gastoEditar}
+           setGastoEditar ={setGastoEditar}
           />}
       </div>
     

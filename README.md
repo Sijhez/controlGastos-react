@@ -16,4 +16,10 @@ npm i prop-types
 ```   
 Y reiniciar aplicación.
 
+## Animación círculo de progress
 
+Se incluye animación con el uso de `React Circular Progressbar`
+Integrar usando:
+```bash
+npm i react-circular-progressbar
+```
