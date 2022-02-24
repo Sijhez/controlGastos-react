@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react'
 import Header from './COMPONENTS/Header'
 import Modal from './COMPONENTS/Modal'
 import ListadoGastos from './COMPONENTS/ListadoGastos'
+import Filtros from './COMPONENTS/Filtros'
 import { generarId } from './helpers'
 import IconoNuevoGasto from './img/nuevo-gasto.svg'
 
 function App() {
-const [gastos, setGastos] = useState([])//estado inicial gastos, array vacio, se acumularan los gastos en forma de objetos
+const [gastos, setGastos] = useState(
+  localStorage.getItem('gastos') ? JSON.parse(localStorage.getItem('gastos')) : []
+)//estado inicial gastos, comprobamos si existe un almacenamiento en localStorage, si existe lo extraemos y se agrega como estado inicial, si no, se agrega un array vacío
 
-const [presupuesto, setPresupuesto]= useState(0) //estado inicial del valor de presupuesto, por default en cero
+//estado inicial del valor de presupuesto, si se ha agregado un nuevo valor en el local storage, pregunta por el, si existe, se agrega al estate, si no, se agrega el cero
+const [presupuesto, setPresupuesto]= useState(Number(localStorage.getItem('presupuesto') ?? 0)) 
 const [isValidPresupuesto, setIsValidPresupuesto] = useState(false) //por default, al ser cero, el presupuesto al principio no es valido
 
 const [modal, setModal]= useState(false)
@@ -16,6 +20,9 @@ const [animarModal, setAnimarModal] = useState(false)
 
 const [gastoEditar, setGastoEditar]=useState({})//estado inicial como objeto vacío
 
+const [filtro, setFiltro] = useState('')
+const [gastosFiltrados, setGastosFiltrados] = useState([])
+//useEffect para editar gasto, si cambia el state de gastoEditar, entra el useEffect
 useEffect(()=>{
   //verificamos si el objeto a editar tiene keys arriba de cero
   if(Object.keys(gastoEditar).length>0){
@@ -28,7 +35,39 @@ useEffect(()=>{
   }
 },[gastoEditar])
 
-const handleNuevoGasto = ()=>{
+//useEffect para almacenar el presupuesto en localStorage
+useEffect(()=>{
+   // almacenamiento de presupuesto en local storage
+   //siempre se agregará un valor, si    
+   localStorage.setItem('presupuesto', presupuesto ?? 0 )
+},[presupuesto])
+
+//useEffect para comprobar que exista presupuesto en localStorage
+useEffect(()=>{
+  const presupuestoLS = Number(localStorage.getItem('presupuesto')?? 0)
+  //hacemos la comprobación, si existe el valor el localStorage, comprobamos que sea mayor a cero, si es así, seteamos el valor de isValidPresupuesto a true, mostrando la otra pantalla
+   if(presupuestoLS > 0){
+     setIsValidPresupuesto(true)
+   }
+  
+}, [])
+
+//useEffect para almacenar gastos en Local Storage
+useEffect(()=>{
+  localStorage.setItem('gastos', JSON.stringify(gastos) ?? [])
+},[gastos])
+
+useEffect(()=>{
+   if(filtro){
+     //filtrando gastos por categoria
+     const gastosFiltrados = gastos.filter(gasto=>gasto.categoria === filtro)
+     setGastosFiltrados(gastosFiltrados)
+      
+   }
+},[filtro])
+
+
+const handleNuevoGasto = ()=>{ 
   
   setModal(true) //cambiando estado del modal
   setGastoEditar({}) //cuando es un nuevo gasto, regresamos el estado del formulario a vacio
@@ -67,10 +106,11 @@ setTimeout(()=>{
  }, 300)
 }
 
-return (
+return ( //si el modal se vuelve true, agrego class fijar, si no, no se agrega nada
     <div className={modal ? 'fijar': ''}>
       <Header
       gastos={gastos}
+      setGastos={setGastos}
        presupuesto={presupuesto}
        setPresupuesto={setPresupuesto}
        isValidPresupuesto={isValidPresupuesto}
@@ -78,11 +118,18 @@ return (
       />
       {isValidPresupuesto && (
         <>
+       
         <main>
+        <Filtros
+        filtro={filtro}
+        setFiltro={setFiltro}
+        />
           <ListadoGastos
           gastos={gastos}
           setGastoEditar={setGastoEditar}
           eliminarGasto = {eliminarGasto}
+          filtro={filtro}
+          gastosFiltrados={gastosFiltrados}
           />
         </main>
         <div className='nuevo-gasto'>
